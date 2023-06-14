@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     networks:
       - traefik_net
+      - global_net
     environment:
       - PUID=1000
       - PGID=1000
@@ -37,3 +38,6 @@ networks:
   traefik_net:
     external:
       name: traefik_net
+  global_net:
+    external:
+      name: global_net
