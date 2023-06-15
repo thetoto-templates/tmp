@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     command: server
     networks:
-      - traefik_net
+      - global_net
     environment:
       AUTHENTIK_SECRET_KEY: ${SECRET_KEY}
       AUTHENTIK_REDIS__HOST: redis
@@ -71,8 +71,8 @@ services:
     image: nitnelave/lldap:v0.4.3
     restart: unless-stopped
     networks:
-      - traefik_net
-      - lldap_net
+      - global_net
+      - ldap_net
     #ports:
       # For LDAP
       #- "3890:3890"
@@ -103,5 +103,6 @@ volumes:
   lldap_data:
 
 networks:
-  traefik_net:
+  global_net:
     external: true
+  ldap_net:
