@@ -17,6 +17,8 @@ services:
     image: redis:alpine
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
+    networks:
+      - authentik
     volumes:
       - authentik-redis:/data
 
