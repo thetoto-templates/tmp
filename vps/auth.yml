@@ -8,7 +8,7 @@ services:
       - authentik-database:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${PG_PASS}
-      POSTGRES_USER: authentik
+      POSTGRES_USER: postgres
       POSTGRES_DB: authentik
 
   redis:
@@ -87,7 +87,7 @@ services:
       - LLDAP_JWT_SECRET=${LLDAP_JWT_SECRET}
       - LLDAP_LDAP_USER_PASS=${LLDAP_LDAP_USER_PASS}
       - LLDAP_LDAP_BASE_DN=dc=thetoto,dc=fr
-      - LLDAP_DATABASE_URL=postgres://postgres:${PG_PASS}@postgresql/lldap
+      #- LLDAP_DATABASE_URL=postgres://postgres:${PG_PASS}@postgresql/lldap # Use sqlite if not defined
     depends_on:
       - postgresql
     labels:
