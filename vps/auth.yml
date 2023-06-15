@@ -4,6 +4,8 @@ services:
   postgresql:
     image: postgres:12-alpine
     restart: unless-stopped
+    networks:
+      - authentik
     volumes:
       - authentik-database:/var/lib/postgresql/data
     environment:
@@ -24,6 +26,7 @@ services:
     command: server
     networks:
       - global_net
+      - authentik
     environment:
       AUTHENTIK_SECRET_KEY: ${SECRET_KEY}
       AUTHENTIK_REDIS__HOST: redis
@@ -50,6 +53,8 @@ services:
     image: ghcr.io/goauthentik/server:2023.5.3
     restart: unless-stopped
     command: worker
+    networks:
+      - authentik
     environment:
       AUTHENTIK_SECRET_KEY: ${SECRET_KEY}
       AUTHENTIK_REDIS__HOST: redis
@@ -74,6 +79,7 @@ services:
     networks:
       - global_net
       - ldap_net
+      - authentik
     #ports:
       # For LDAP
       #- "3890:3890"
@@ -88,7 +94,7 @@ services:
       - LLDAP_JWT_SECRET=${LLDAP_JWT_SECRET}
       - LLDAP_LDAP_USER_PASS=${LLDAP_LDAP_USER_PASS}
       - LLDAP_LDAP_BASE_DN=dc=thetoto,dc=fr
-      #- LLDAP_DATABASE_URL=postgres://postgres:${PG_PASS}@postgresql/lldap # Use sqlite if not defined
+      - LLDAP_DATABASE_URL=postgres://postgres:${PG_PASS}@postgresql/lldap # Use sqlite if not defined
     depends_on:
       - postgresql
     labels:
@@ -107,3 +113,4 @@ networks:
   global_net:
     external: true
   ldap_net:
+  authentik:
