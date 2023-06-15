@@ -73,7 +73,7 @@ services:
     networks:
       - traefik_net
       - lldap_net
-    ports:
+    #ports:
       # For LDAP
       #- "3890:3890"
       # For the web front-end
