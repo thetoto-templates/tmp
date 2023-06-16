@@ -72,7 +72,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.radarr.entrypoints=https'
-      - 'traefik.http.services.sonarr.loadbalancer.server.port=7878'
+      - 'traefik.http.services.radarr.loadbalancer.server.port=7878'
       - 'traefik.http.routers.radarr.middlewares=authentik@docker'
 
   overseerr:
@@ -88,7 +88,7 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.services.sonarr.loadbalancer.server.port=5055'
+      - 'traefik.http.services.overseerr.loadbalancer.server.port=5055'
       - 'traefik.http.routers.overseerr.entrypoints=https'
 
   tautulli:
@@ -100,7 +100,7 @@ services:
       - ${HOST_PATH}/tautulli:/config
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.services.sonarr.loadbalancer.server.port=8181'
+      - 'traefik.http.services.tautulli.loadbalancer.server.port=8181'
       - 'traefik.http.routers.tautulli.entrypoints=https'
     #ports:
     #  - 8181:8181
