@@ -12,13 +12,14 @@ services:
       - TZ=Europe/Paris
       - DOCKER_MODS=linuxserver/mods:universal-calibre
     volumes:
-      - /root/selfhosted/books/calibre-web:/config
-      - /root/selfhosted/books/books:/books
+      - ${HOST_PATH}/calibre-web:/config
+      - ${HOST_PATH}/books:/books
     #ports:
     #  - 8083:8083
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.calibre.entrypoints=https'
+      - 'traefik.http.services.calibre.loadbalancer.server.port=8083'
 
       - "traefik.http.middlewares.https-headers-books.headers.browserXssFilter=true"
       - "traefik.http.middlewares.https-headers-books.headers.contentTypeNosniff=true"
