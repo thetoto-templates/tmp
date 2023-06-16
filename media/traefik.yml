@@ -30,7 +30,7 @@ services:
     extra_hosts:
       - host.docker.internal:127.0.0.1 # For net=host containers (public ip, put in env)
     ports:
-      - 80:80
+      #- 80:80
       - 443:443
     command:
       - '--api'
