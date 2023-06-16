@@ -81,7 +81,7 @@ services:
     #  - 9000:9000
     #  - 9443:9443
     environment:
-      AUTHENTIK_HOST: https://auth2.${APP_DOMAIN}
+      AUTHENTIK_HOST: https://auth.${APP_DOMAIN}
       AUTHENTIK_INSECURE: "false"
       AUTHENTIK_TOKEN: ${AUTHENTIK_TOKEN}
     labels:
