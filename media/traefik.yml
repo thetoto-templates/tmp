@@ -96,7 +96,7 @@ services:
     restart: unless-stopped
 
   whoami:
-    image: containous/whoami
+    image: containous/whoami:latest
     networks:
       - global_net
     labels:
