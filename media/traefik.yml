@@ -66,7 +66,7 @@ services:
       - '--certificatesResolvers.letsencrypt.acme.caserver=https://acme-v02.api.letsencrypt.org/directory'
 
       - '--log=true'
-      #- '--log.level=DEBUG'
+      - '--log.level=DEBUG'
       #- '--log.filepath=/var/log/traefik.log'
 
       - '--accesslog.filepath=/data/access.log'
