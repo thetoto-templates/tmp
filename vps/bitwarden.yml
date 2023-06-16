@@ -17,10 +17,12 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.pass.entrypoints=https'
+      - 'traefik.http.routers.pass.service=pass'
       - 'traefik.http.services.pass.loadbalancer.server.port=80'
 
       - 'traefik.http.routers.pass-websocket.entrypoints=https'
       - 'traefik.http.routers.pass-websocket.rule=Host(`pass.thetoto.fr`) && Path(`/notifications/hub`)'
+      - 'traefik.http.routers.pass-websocket.service=pass-websocket'
       - 'traefik.http.services.pass-websocket.loadbalancer.server.port=3012'
 
 networks:
