@@ -4,6 +4,8 @@ services:
   dockerproxy:
     image: tecnativa/docker-socket-proxy:latest
     restart: unless-stopped
+    networks:
+      - socket_docker
     environment:
       - CONTAINERS=1
     volumes:
@@ -17,6 +19,7 @@ services:
       - traefik-data:/data
     networks:
       - global_net
+      - socket_docker
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
     labels:
@@ -102,3 +105,4 @@ volumes:
 networks:
   global_net:
     name: global_net
+  socket_docker:
