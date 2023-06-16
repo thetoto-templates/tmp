@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   dockerproxy:
-    image: tecnativa/docker-socket-proxy
+    image: tecnativa/docker-socket-proxy:latest
     restart: unless-stopped
     environment:
       - CONTAINERS=1
@@ -13,17 +13,17 @@ services:
     image: traefik:2.10.1
     restart: unless-stopped
     volumes:
-      - ./traefik/acme.json:/acme.json
-      - ./traefik/data:/data
+      - traefik-acme:/acme
+      - traefik-data:/data
     networks:
-      - traefik_net
+      - global_net
     sysctls:
       net.ipv4.ip_unprivileged_port_start: 0
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.api.entrypoints=https'
       - 'traefik.http.routers.api.service=api@internal'
-      - 'traefik.http.routers.api.middlewares=authelia@docker'
+      - 'traefik.http.routers.api.middlewares=authentik@docker'
     environment:
       - CF_API_EMAIL=${CF_API_EMAIL}
       - CF_API_KEY=${CF_API_KEY}
@@ -34,12 +34,11 @@ services:
       - 443:443
     command:
       - '--api'
-      - '--pilot.token=${PILOT_KEY}'
 
       - '--providers.docker=true'
       - '--providers.docker.exposedByDefault=false'
       - '--providers.docker.endpoint=tcp://dockerproxy:2375'
-      - '--providers.docker.defaultRule=Host(`{{ index .Labels "com.docker.compose.service"}}.thetoto.fr`)'
+      - '--providers.docker.defaultRule=Host(`{{ index .Labels "com.docker.compose.service"}}.media.${APP_DOMAIN}`) || Host(`{{ index .Labels "com.docker.compose.service"}}.${APP_DOMAIN}`)'
 
         # Accept connections on :80 but redirect to :443
       - '--entrypoints.http=true'
@@ -52,13 +51,12 @@ services:
       - '--entrypoints.https.address=:443'
       - '--entrypoints.https.http.tls=true'
       - '--entrypoints.https.http.tls.certResolver=letsencrypt'
-      - '--entrypoints.https.http.tls.domains[0].main=thetoto.fr'
-      - '--entrypoints.https.http.tls.domains[0].sans=*.thetoto.fr'
-      #- '--entrypoints.https.http.tls.domains[1].main=code.thetoto.fr'
-      #- '--entrypoints.https.http.tls.domains[1].sans=*.code.thetoto.fr'
-      #- '--entrypoints.https.http.middlewares=error-pages@docker'
+      - '--entrypoints.https.http.tls.domains[0].main=${APP_DOMAIN}'
+      - '--entrypoints.https.http.tls.domains[0].sans=*.${APP_DOMAIN}'
+      - '--entrypoints.https.http.tls.domains[1].main=media.${APP_DOMAIN}'
+      - '--entrypoints.https.http.tls.domains[1].sans=*.media.${APP_DOMAIN}'
 
-      - '--certificatesResolvers.letsencrypt.acme.storage=acme.json'
+      - '--certificatesResolvers.letsencrypt.acme.storage=/acme/acme.json'
       - '--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare'
       # Staging
       #- '--certificatesResolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory'
@@ -70,3 +68,37 @@ services:
 
       - '--accesslog.filepath=/data/access.log'
       #- '--metrics.prometheus=true'
+
+  authentik-proxy:
+    image: ghcr.io/goauthentik/proxy:2023.5.3
+    #ports:
+    #  - 9000:9000
+    #  - 9443:9443
+    environment:
+      AUTHENTIK_HOST: https://auth2.${APP_DOMAIN}
+      AUTHENTIK_INSECURE: "false"
+      AUTHENTIK_TOKEN: ${AUTHENTIK_TOKEN}
+    labels:
+      traefik.enable: true
+      traefik.http.routers.authentik.rule: HostRegexp(`{subdomain:[a-z0-9-]+}.media.${APP_DOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)
+
+      traefik.http.middlewares.authentik.forwardauth.address: http://authentik-proxy:9000/outpost.goauthentik.io/auth/traefik
+      traefik.http.middlewares.authentik.forwardauth.trustForwardHeader: true
+      traefik.http.middlewares.authentik.forwardauth.authResponseHeaders: X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid,X-authentik-jwt,X-authentik-meta-jwks,X-authentik-meta-outpost,X-authentik-meta-provider,X-authentik-meta-app,X-authentik-meta-version
+    restart: unless-stopped
+
+  whoami:
+    image: containous/whoami
+    labels:
+      traefik.enable: true
+      traefik.http.routers.whoami.entrypoints: https
+      traefik.http.routers.whoami.middlewares: authentik@docker
+    restart: unless-stopped
+
+volumes:
+  traefik-acme:
+  traefik-data:
+
+networks:
+  global_net:
+    external: true
