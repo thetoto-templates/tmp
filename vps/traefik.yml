@@ -16,7 +16,7 @@ services:
     container_name: traefik
     restart: unless-stopped
     depends_on:
-      - auth
+      - dockerproxy
     volumes:
       - ${HOST_PATH}/acme.json:/acme.json
       - ${HOST_PATH}/data:/data
