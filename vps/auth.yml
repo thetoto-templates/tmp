@@ -48,6 +48,7 @@ services:
       - ldap
     labels:
       - 'traefik.enable=true'
+      - 'traefik.http.routers.auth2.entrypoints=https
       - 'traefik.http.services.auth2.loadbalancer.server.port=9000'
 
   worker:
@@ -100,6 +101,7 @@ services:
       - postgresql
     labels:
       - 'traefik.enable=true'
+      - 'traefik.http.routers.ldap.entrypoints=https
       - 'traefik.http.services.ldap.loadbalancer.server.port=17170'
 
 volumes:
