@@ -1,6 +1,6 @@
 # VPS stack
 
-This repository contains docker-compose files.
+This repository contains docker-compose files of my VPS setup.
 
 I use portainer and its git functionality to deploy these files and update my compose files without ssh access, but they can be used like any other `compose.yaml` file
 
