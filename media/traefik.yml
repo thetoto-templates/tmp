@@ -26,20 +26,21 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.api.entrypoints=https'
       - 'traefik.http.routers.api.service=api@internal'
-      #- 'traefik.http.routers.api.middlewares=authentik@docker'
+      - 'traefik.http.routers.api.middlewares=authentik@docker'
     environment:
       - CF_API_EMAIL=${CF_API_EMAIL}
       - CF_API_KEY=${CF_API_KEY}
     extra_hosts:
       - host.docker.internal:127.0.0.1 # For net=host containers (public ip, put in env)
     ports:
-      #- 80:80
+      - 80:80
       - 443:443
     command:
       - '--api'
 
       - '--providers.docker=true'
       - '--providers.docker.exposedByDefault=false'
+      - '--providers.docker.network=global_net'
       - '--providers.docker.endpoint=tcp://dockerproxy:2375'
       - '--providers.docker.defaultRule=Host(`{{ index .Labels "com.docker.compose.service"}}.media.${APP_DOMAIN}`) || Host(`{{ index .Labels "com.docker.compose.service"}}.${APP_DOMAIN}`)'
 
