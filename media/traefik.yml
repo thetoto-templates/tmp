@@ -101,4 +101,4 @@ volumes:
 
 networks:
   global_net:
-    external: true
+    name: global_net
