@@ -45,7 +45,6 @@ services:
     depends_on:
       - postgresql
       - redis
-      - ldap
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.auth2.entrypoints=https'
@@ -73,36 +72,6 @@ services:
     depends_on:
       - postgresql
       - redis
-      - ldap
-
-  ldap:
-    image: nitnelave/lldap:v0.4.3
-    restart: unless-stopped
-    networks:
-      - global_net
-      - ldap_net
-      - authentik
-    #ports:
-      # For LDAP
-      #- "3890:3890"
-      # For the web front-end
-      #- "17170:17170"
-    volumes:
-      - "lldap_data:/data"
-    environment:
-      - UID=1000
-      - GID=1000
-      - TZ=Europe/Paris
-      - LLDAP_JWT_SECRET=${LLDAP_JWT_SECRET}
-      - LLDAP_LDAP_USER_PASS=${LLDAP_LDAP_USER_PASS}
-      - LLDAP_LDAP_BASE_DN=dc=thetoto,dc=fr
-      #- LLDAP_DATABASE_URL=postgres://postgres:${PG_PASS}@postgresql/lldap # Use sqlite if not defined
-    depends_on:
-      - postgresql
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.ldap.entrypoints=https'
-      - 'traefik.http.services.ldap.loadbalancer.server.port=17170'
 
 volumes:
   authentik-database:
@@ -110,10 +79,8 @@ volumes:
   authentik-certs:
   authentik-media:
   authentik-templates:
-  lldap_data:
 
 networks:
   global_net:
     external: true
-  ldap_net:
   authentik:
